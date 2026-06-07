@@ -161,6 +161,35 @@
     .word-ex .ko { font-size:13px; color:var(--muted); }
     .empty { border:1px dashed var(--border); border-radius:var(--radius-lg); padding:40px; text-align:center; color:var(--muted-2); font-size:14px; line-height:1.8; }
 
+    /* Quiz */
+    .quiz-card { border:1px solid var(--border); background:#fff; border-radius:var(--radius-xl); padding:26px; box-shadow:var(--shadow); animation:fadeUp .4s ease both; }
+    .quiz-intro { text-align:center; }
+    .quiz-emoji { width:64px; height:64px; }
+    .quiz-intro-text { color:var(--muted); margin:12px 0 18px; }
+    .quiz-head { display:flex; justify-content:space-between; color:var(--muted-2); font-size:13px; font-weight:700; margin-bottom:14px; }
+    .quiz-label { font-size:12px; text-transform:uppercase; letter-spacing:.1em; color:var(--green); font-weight:700; margin-bottom:10px; }
+    .quiz-prompt { font-size:24px; font-weight:700; color:var(--text); line-height:1.5; }
+    .quiz-prompt .q-read { font-size:16px; font-weight:600; color:var(--green); margin-left:8px; }
+    .quiz-prompt .blank { color:var(--green); border-bottom:3px solid var(--green); padding:0 16px; margin:0 2px; }
+    .quiz-hint { color:var(--muted); font-size:14px; margin-top:8px; }
+    .quiz-options { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:18px; }
+    .opt { border:1px solid var(--border); background:var(--field); color:var(--text); border-radius:14px; padding:16px; font:inherit; font-size:16px; font-weight:600; cursor:pointer; transition:.15s ease; text-align:center; }
+    .opt:hover:not(:disabled) { border-color:var(--border-strong); background:var(--green-soft); }
+    .opt:disabled { cursor:default; }
+    .opt.correct { background:var(--green); color:#fff; border-color:var(--green); }
+    .opt.wrong { background:rgba(229,72,77,.10); color:var(--danger); border-color:rgba(229,72,77,.45); }
+    .opt.dim { opacity:.45; }
+    .quiz-fb { margin-top:16px; font-weight:800; font-size:16px; }
+    .quiz-fb.ok { color:var(--green); }
+    .quiz-fb.no { color:var(--danger); }
+    .quiz-next { margin-top:14px; padding:13px 26px; border-radius:14px; }
+    .quiz-result { text-align:center; }
+    .result-emoji { width:76px; height:76px; margin:0 auto; display:block; }
+    .result-msg { font-size:22px; font-weight:800; margin:14px 0 20px; }
+    .result-actions { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+    .btn-ghost2 { border:1px solid var(--border); background:transparent; color:var(--muted); border-radius:14px; padding:13px 24px; font:inherit; font-weight:700; cursor:pointer; transition:.15s ease; }
+    .btn-ghost2:hover { border-color:var(--border-strong); color:var(--text); }
+
     /* Animations & 3D emoji */
     @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:none} }
     @keyframes pop    { from{opacity:0;transform:scale(.72)} to{opacity:1;transform:scale(1)} }
@@ -208,6 +237,8 @@
       .word-ex .jp { font-size:16px; }
       .stats { gap:8px; }
       .stat { padding:8px 12px; font-size:12px; }
+      .quiz-options { grid-template-columns:1fr; }
+      .quiz-prompt { font-size:20px; }
     }
   </style>
 </head>
@@ -242,9 +273,6 @@
 
   <main>
     <section class="hero">
-      <img class="hero-emoji he1" src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Pencil/3D/pencil_3d.png" alt="">
-      <img class="hero-emoji he2" src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Open%20book/3D/open_book_3d.png" alt="">
-      <img class="hero-emoji he3" src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Smiling%20face%20with%20smiling%20eyes/3D/smiling_face_with_smiling_eyes_3d.png" alt="">
       <p class="eyebrow" id="heroEyebrow">Day 1</p>
       <h2 id="heroTitle"></h2>
       <p data-i18n="heroDesc"></p>
@@ -257,6 +285,9 @@
 
     <div class="section-title"><h3 id="sectionTitle"></h3></div>
     <div id="kanjiArea"></div>
+
+    <div class="section-title"><h3 id="quizTitle"></h3></div>
+    <div id="quizArea"></div>
   </main>
 </div>
 
@@ -274,11 +305,15 @@
       playAudio:"Play word audio", pause:"Pause",
       done:"Done", ready:"ready", noneYet:"None yet",
       audioLoadErr:"Couldn't load the audio. Please check your connection or the URL.",
-      audioPlayErr:"Couldn't start playback."
+      audioPlayErr:"Couldn't start playback.",
+      quiz:"Quiz", startQuiz:"Start quiz", quizIntro:"Test what you learned with a quick quiz.",
+      labelMeaning:"What does this word mean?", labelBlank:"Fill in the blank",
+      correct:"Correct!", wrong:"Not quite", next:"Next", finish:"See result",
+      retry:"Try again", close:"Close", score:"Score", noQuiz:"Not enough words to make a quiz yet."
     },
     ko: {
       appName:"\ud558\ub8e8 \uc77c\ubcf8\uc5b4", tagline:"\uae30\ucd08 \ud55c\uc790\ub85c \uc77c\ubcf8\uc5b4 \ud559\uc2b5\ud558\uae30",
-      studyDays:"\ud559\uc2b5\uc77c", newDay:"+ \uc0c8 \ub0a0", learnedKanji:"\ubc30\uc6b4 \ud55c\uc790",
+      studyDays:"\ud559\uc2b5\uc77c", newDay:"+ New Day", learnedKanji:"\ubc30\uc6b4 \ud55c\uc790",
       heroDesc:"\uae30\ucd08 \ud55c\uc790 \ub2e8\uc5b4\ub97c \ud1b5\ud574 \uc77c\ubcf8\uc5b4 \ub2e8\uc5b4\ub97c \ud559\uc2b5\ud574\uc694! \uc544\ub798 \ub4e3\uae30 \ubc84\ud2bc\uc73c\ub85c \ubbf8\ub9ac \ub2e8\uc5b4\ub97c \ub4e4\uc740 \ud6c4 \ud559\uc2b5\ud574 \ubcf4\uc138\uc694.",
       days:"\uc77c\ucc28", words:"\ub2e8\uc5b4", examples:"\uc608\ubb38",
       kanjiWord:"\ud55c\uc790", todaysKanji:"\uc624\ub298\uc758 \ud55c\uc790",
@@ -286,7 +321,11 @@
       playAudio:"\ub2e8\uc5b4 \ub4e3\uae30", pause:"\uc815\uc9c0",
       done:"\uc644\ub8cc", ready:"\uc900\ube44", noneYet:"\uc544\uc9c1 \uc5c6\uc5b4\uc694",
       audioLoadErr:"\uc74c\uc6d0\uc744 \ubd88\ub7ec\uc624\uc9c0 \ubabb\ud588\uc5b4\uc694. \ub124\ud2b8\uc6cc\ud06c\ub098 \uc8fc\uc18c\ub97c \ud655\uc778\ud574\uc8fc\uc138\uc694.",
-      audioPlayErr:"\uc7ac\uc0dd\uc744 \uc2dc\uc791\ud560 \uc218 \uc5c6\uc5b4\uc694."
+      audioPlayErr:"\uc7ac\uc0dd\uc744 \uc2dc\uc791\ud560 \uc218 \uc5c6\uc5b4\uc694.",
+      quiz:"퀴즈", startQuiz:"퀴즈 시작", quizIntro:"간단한 퀴즈로 배운 내용을 확인해 보세요.",
+      labelMeaning:"이 단어의 뜻은?", labelBlank:"빈칸에 들어갈 단어는?",
+      correct:"정답!", wrong:"오답", next:"다음", finish:"결과 보기",
+      retry:"다시 풀기", close:"닫기", score:"점수", noQuiz:"퀴즈를 만들 단어가 부족해요."
     }
   };
 
@@ -431,12 +470,135 @@
     const area = document.getElementById("kanjiArea");
     const noKanji = lang === "ko" ? `Day ${currentDay} 한자가 아직 없어요.` : `No kanji for Day ${currentDay} yet.`;
     area.innerHTML = entry ? cardHTML(entry) : `<div class="empty">${esc(noKanji)}</div>`;
+
+    document.getElementById("quizTitle").textContent = tr().quiz;
+    quiz = null;
+    renderQuizIntro(entry);
   }
 
   function goToDay(day){ currentDay = day; persist(); render(); }
   function addNewDay(){ state.totalDays = (state.totalDays||1)+1; goToDay(state.totalDays); }
 
   function setLang(l){ lang = l; persist(); applyStatic(); render(); }
+
+  /* Quiz */
+  const EMO = "https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/";
+  let quiz = null;
+
+  function shuffle(a){ a = a.slice(); for (let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+  function renderQuizIntro(entry){
+    const qa = document.getElementById("quizArea");
+    const words = entry ? [...(entry.onWords||[]), ...(entry.kunWords||[])] : [];
+    if (words.length < 2) { qa.innerHTML = `<div class="empty">${esc(tr().noQuiz)}</div>`; return; }
+    qa.innerHTML = `
+      <div class="quiz-card quiz-intro">
+        <img class="quiz-emoji" src="${EMO}Bullseye/3D/bullseye_3d.png" alt="">
+        <div class="quiz-intro-text">${esc(tr().quizIntro)}</div>
+        <button class="btn-primary" style="padding:14px 28px;border-radius:14px" onclick="startQuiz()">${esc(tr().startQuiz)}</button>
+      </div>`;
+  }
+
+  function buildQuiz(entry){
+    const words = [...(entry.onWords||[]), ...(entry.kunWords||[])];
+    if (words.length < 2) return null;
+    const qs = [];
+    words.forEach(word => {
+      // meaning multiple choice
+      const otherM = shuffle(words.filter(x => x !== word).map(x => L(x.m))).slice(0,3);
+      qs.push({
+        type:"meaning",
+        prompt:`${esc(word.w)} <span class="q-read">${esc(word.r||"")}</span>`,
+        answer:L(word.m),
+        options: shuffle([L(word.m), ...otherM])
+      });
+      // fill in the blank
+      if (word.ex && word.ex.jp && word.ex.jp.indexOf(word.w) >= 0) {
+        const blanked = esc(word.ex.jp).replace(esc(word.w), `<span class="blank">____</span>`);
+        const otherW = shuffle(words.filter(x => x !== word).map(x => x.w)).slice(0,3);
+        qs.push({
+          type:"blank",
+          prompt: blanked,
+          hint: word.ex[lang] || word.ex.en || "",
+          answer: word.w,
+          options: shuffle([word.w, ...otherW])
+        });
+      }
+    });
+    return { questions: shuffle(qs).slice(0, Math.min(8, qs.length)), idx:0, score:0, answered:false, chosen:null };
+  }
+
+  function startQuiz(){
+    const entry = getDayEntry(currentDay);
+    quiz = buildQuiz(entry);
+    if (!quiz) { renderQuizIntro(entry); return; }
+    renderQuiz();
+  }
+
+  function renderQuiz(){
+    const q = quiz.questions[quiz.idx];
+    const label = q.type === "blank" ? tr().labelBlank : tr().labelMeaning;
+    const hint = q.type === "blank" && q.hint ? `<div class="quiz-hint">${esc(q.hint)}</div>` : "";
+    const opts = q.options.map((o,i) => {
+      let cls = "opt";
+      if (quiz.answered){
+        if (o === q.answer) cls += " correct";
+        else if (i === quiz.chosen) cls += " wrong";
+        else cls += " dim";
+      }
+      return `<button class="${cls}" ${quiz.answered?"disabled":""} onclick="answerQuiz(${i})">${esc(o)}</button>`;
+    }).join("");
+    let footer = "";
+    if (quiz.answered){
+      const ok = q.options[quiz.chosen] === q.answer;
+      const last = quiz.idx === quiz.questions.length - 1;
+      footer = `<div class="quiz-fb ${ok?"ok":"no"}">${ok?tr().correct:tr().wrong}</div>
+        <button class="btn-primary quiz-next" onclick="nextQuiz()">${last?tr().finish:tr().next}</button>`;
+    }
+    document.getElementById("quizArea").innerHTML = `
+      <div class="quiz-card">
+        <div class="quiz-head"><span>${quiz.idx+1} / ${quiz.questions.length}</span><span>${esc(tr().score)}: ${quiz.score}</span></div>
+        <div class="quiz-label">${esc(label)}</div>
+        <div class="quiz-prompt">${q.prompt}</div>
+        ${hint}
+        <div class="quiz-options">${opts}</div>
+        ${footer}
+      </div>`;
+  }
+
+  function answerQuiz(i){
+    if (quiz.answered) return;
+    quiz.chosen = i;
+    quiz.answered = true;
+    const q = quiz.questions[quiz.idx];
+    if (q.options[i] === q.answer) quiz.score++;
+    renderQuiz();
+  }
+
+  function nextQuiz(){
+    quiz.idx++; quiz.answered = false; quiz.chosen = null;
+    if (quiz.idx >= quiz.questions.length) renderResult();
+    else renderQuiz();
+  }
+
+  function renderResult(){
+    const total = quiz.questions.length, sc = quiz.score, ratio = sc/total;
+    const emo = ratio === 1 ? "Party%20popper/3D/party_popper_3d.png"
+              : ratio >= 0.6 ? "Smiling%20face%20with%20smiling%20eyes/3D/smiling_face_with_smiling_eyes_3d.png"
+              : "Brain/3D/brain_3d.png";
+    const msg = lang === "ko" ? `${total}문제 중 ${sc}개 정답!` : `You scored ${sc} / ${total}`;
+    document.getElementById("quizArea").innerHTML = `
+      <div class="quiz-card quiz-result">
+        <img class="result-emoji" src="${EMO}${emo}" alt="">
+        <div class="result-msg">${esc(msg)}</div>
+        <div class="result-actions">
+          <button class="btn-primary" style="padding:13px 26px;border-radius:14px" onclick="startQuiz()">${esc(tr().retry)}</button>
+          <button class="btn-ghost2" onclick="closeQuiz()">${esc(tr().close)}</button>
+        </div>
+      </div>`;
+  }
+
+  function closeQuiz(){ quiz = null; renderQuizIntro(getDayEntry(currentDay)); }
 
   /* Audio */
   let currentAudio = null, currentBtn = null;
