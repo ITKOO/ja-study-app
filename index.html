@@ -168,10 +168,20 @@
     .quiz-intro-text { color:var(--muted); margin:12px 0 18px; }
     .quiz-head { display:flex; justify-content:space-between; color:var(--muted-2); font-size:13px; font-weight:700; margin-bottom:14px; }
     .quiz-label { font-size:12px; text-transform:uppercase; letter-spacing:.1em; color:var(--green); font-weight:700; margin-bottom:10px; }
-    .quiz-prompt { font-size:24px; font-weight:700; color:var(--text); line-height:1.5; }
+    .quiz-prompt { font-size:24px; font-weight:700; color:var(--text); line-height:1.5; text-align:center; }
     .quiz-prompt .q-read { font-size:16px; font-weight:600; color:var(--green); margin-left:8px; }
-    .quiz-prompt .blank { color:var(--green); border-bottom:3px solid var(--green); padding:0 16px; margin:0 2px; }
-    .quiz-hint { color:var(--muted); font-size:14px; margin-top:8px; }
+    .quiz-prompt.blank-q {
+      background:linear-gradient(180deg,var(--green-soft),#fff);
+      border:1px solid var(--border); border-radius:16px;
+      padding:24px 20px; line-height:1.8; font-size:22px;
+    }
+    .quiz-prompt .blank {
+      display:inline-flex; align-items:center; justify-content:center;
+      min-width:58px; padding:2px 14px; margin:0 4px; vertical-align:middle;
+      background:#fff; border:2px dashed var(--green); border-radius:10px;
+      color:var(--green); font-weight:800;
+    }
+    .quiz-hint { color:var(--muted); font-size:14px; margin-top:10px; text-align:center; }
     .quiz-options { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:18px; }
     .opt { border:1px solid var(--border); background:var(--field); color:var(--text); border-radius:14px; padding:16px; font:inherit; font-size:16px; font-weight:600; cursor:pointer; transition:.15s ease; text-align:center; }
     .opt:hover:not(:disabled) { border-color:var(--border-strong); background:var(--green-soft); }
@@ -179,10 +189,11 @@
     .opt.correct { background:var(--green); color:#fff; border-color:var(--green); }
     .opt.wrong { background:rgba(229,72,77,.10); color:var(--danger); border-color:rgba(229,72,77,.45); }
     .opt.dim { opacity:.45; }
-    .quiz-fb { margin-top:16px; font-weight:800; font-size:16px; }
+    .quiz-footer { display:flex; align-items:center; justify-content:space-between; gap:14px; margin-top:20px; flex-wrap:wrap; }
+    .quiz-fb { font-weight:800; font-size:16px; margin:0; }
     .quiz-fb.ok { color:var(--green); }
     .quiz-fb.no { color:var(--danger); }
-    .quiz-next { margin-top:14px; padding:13px 26px; border-radius:14px; }
+    .quiz-next { margin:0; margin-left:auto; padding:15px 34px; border-radius:14px; font-size:16px; }
     .quiz-result { text-align:center; }
     .result-emoji { width:76px; height:76px; margin:0 auto; display:block; }
     .result-msg { font-size:22px; font-weight:800; margin:14px 0 20px; }
@@ -239,6 +250,8 @@
       .stat { padding:8px 12px; font-size:12px; }
       .quiz-options { grid-template-columns:1fr; }
       .quiz-prompt { font-size:20px; }
+      .quiz-footer { flex-direction:column; align-items:stretch; }
+      .quiz-next { margin-left:0; width:100%; }
     }
   </style>
 </head>
@@ -514,7 +527,7 @@
       });
       // fill in the blank
       if (word.ex && word.ex.jp && word.ex.jp.indexOf(word.w) >= 0) {
-        const blanked = esc(word.ex.jp).replace(esc(word.w), `<span class="blank">____</span>`);
+        const blanked = esc(word.ex.jp).replace(esc(word.w), `<span class="blank">?</span>`);
         const otherW = shuffle(words.filter(x => x !== word).map(x => x.w)).slice(0,3);
         qs.push({
           type:"blank",
@@ -552,14 +565,17 @@
     if (quiz.answered){
       const ok = q.options[quiz.chosen] === q.answer;
       const last = quiz.idx === quiz.questions.length - 1;
-      footer = `<div class="quiz-fb ${ok?"ok":"no"}">${ok?tr().correct:tr().wrong}</div>
-        <button class="btn-primary quiz-next" onclick="nextQuiz()">${last?tr().finish:tr().next}</button>`;
+      footer = `<div class="quiz-footer">
+        <div class="quiz-fb ${ok?"ok":"no"}">${ok?tr().correct:tr().wrong}</div>
+        <button class="btn-primary quiz-next" onclick="nextQuiz()">${last?tr().finish:tr().next} →</button>
+      </div>`;
     }
+    const promptCls = q.type === "blank" ? "quiz-prompt blank-q" : "quiz-prompt";
     document.getElementById("quizArea").innerHTML = `
       <div class="quiz-card">
         <div class="quiz-head"><span>${quiz.idx+1} / ${quiz.questions.length}</span><span>${esc(tr().score)}: ${quiz.score}</span></div>
         <div class="quiz-label">${esc(label)}</div>
-        <div class="quiz-prompt">${q.prompt}</div>
+        <div class="${promptCls}">${q.prompt}</div>
         ${hint}
         <div class="quiz-options">${opts}</div>
         ${footer}
