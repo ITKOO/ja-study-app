@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JA Study</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=LINE+Seed+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #ffffff;
+      --bg-soft: #f4f8f6;
+      --panel: #ffffff;
+      --panel-2: #f4f8f6;
+      --card: #ffffff;
+      --card-hover: #f3faf6;
+      --border: rgba(15, 30, 22, 0.10);
+      --border-strong: rgba(10, 157, 91, 0.40);
+      --text: #0d1a13;
+      --muted: #5b6b62;
+      --muted-2: #8a958f;
+      --green: #0a9d5b;
+      --green-soft: rgba(10, 157, 91, 0.10);
+      --green-glow: rgba(10, 157, 91, 0.20);
+      --field: #f4f8f6;
+      --danger: #e5484d;
+      --shadow: 0 18px 50px rgba(15, 40, 28, 0.10);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "LINE Seed JP", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+      background:
+        radial-gradient(circle at 20% 0%, rgba(10, 157, 91, 0.08), transparent 32%),
+        radial-gradient(circle at 80% 10%, rgba(10, 157, 91, 0.05), transparent 28%),
+        linear-gradient(180deg, #ffffff 0%, #f4f8f6 100%);
+      color: var(--text);
+    }
+
+    .app { display: grid; grid-template-columns: 280px 1fr; min-height: 100vh; }
+
+    aside {
+      border-right: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.78);
+      backdrop-filter: blur(18px);
+      padding: 28px 20px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 34px; }
+
+    .logo {
+      width: 42px; height: 42px; border-radius: 14px;
+      background: linear-gradient(135deg, #3ecf8e, #14784d);
+      display: grid; place-items: center;
+      color: #ffffff; font-weight: 800;
+      box-shadow: 0 6px 20px var(--green-glow);
+    }
+
+    .brand h1 { font-size: 18px; margin: 0; letter-spacing: -0.02em; }
+    .brand p { margin: 3px 0 0; color: var(--muted); font-size: 12px; }
+
+    .side-label {
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em;
+      color: var(--muted-2); margin: 26px 10px 10px;
+    }
+
+    .day-list { display: grid; gap: 8px; }
+
+    .day-button {
+      width: 100%; border: 1px solid transparent; background: transparent;
+      color: var(--muted); padding: 13px 14px; border-radius: 14px;
+      text-align: left; display: flex; justify-content: space-between; align-items: center;
+      cursor: pointer; font: inherit; transition: 0.2s ease;
+    }
+
+    .day-button:hover, .day-button.active {
+      background: var(--green-soft); color: var(--text); border-color: var(--border-strong);
+    }
+
+    .badge {
+      font-size: 11px; color: var(--green);
+      background: var(--green-soft); border: 1px solid var(--border-strong);
+      padding: 3px 8px; border-radius: 999px;
+    }
+
+    .new-day {
+      margin-top: 16px; width: 100%;
+      border: 1px dashed var(--border-strong); background: var(--green-soft);
+      color: var(--green); padding: 13px 14px; border-radius: 14px;
+      font: inherit; cursor: pointer; transition: 0.2s ease;
+    }
+    .new-day:hover { background: rgba(10, 157, 91, 0.16); }
+
+    main { padding: 34px; }
+
+    .hero {
+      border: 1px solid var(--border); border-radius: var(--radius-xl);
+      padding: 30px;
+      background: linear-gradient(135deg, rgba(10, 157, 91, 0.08), transparent 42%), #ffffff;
+      box-shadow: var(--shadow); position: relative; overflow: hidden; margin-bottom: 24px;
+    }
+
+    .hero::after {
+      content: ""; position: absolute; right: -120px; top: -120px;
+      width: 280px; height: 280px; border-radius: 50%;
+      border: 1px solid rgba(10, 157, 91, 0.16);
+    }
+
+    .eyebrow { color: var(--green); font-size: 13px; font-weight: 700; margin: 0 0 8px; }
+    .hero h2 { font-size: clamp(34px, 4vw, 56px); line-height: 1; letter-spacing: -0.05em; margin: 0; }
+    .hero p { color: var(--muted); margin: 14px 0 0; max-width: 640px; line-height: 1.7; }
+
+    .stats { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 22px; }
+    .stat {
+      border: 1px solid var(--border); background: rgba(15, 30, 22, 0.03);
+      padding: 10px 14px; border-radius: 999px; color: var(--muted); font-size: 13px;
+    }
+    .stat strong { color: var(--text); margin-right: 4px; }
+
+    .input-card {
+      display: grid; grid-template-columns: 1fr auto; gap: 12px;
+      border: 1px solid var(--border); border-radius: var(--radius-lg);
+      background: #ffffff; box-shadow: var(--shadow); padding: 16px; margin-bottom: 24px;
+    }
+
+    .input-card input {
+      min-width: 0; border: 1px solid var(--border); background: var(--field);
+      color: var(--text); border-radius: 16px; padding: 16px 18px;
+      font-size: 18px; outline: none; font-family: inherit;
+    }
+    .input-card input:focus { border-color: var(--border-strong); box-shadow: 0 0 0 4px rgba(10, 157, 91, 0.10); background: #fff; }
+
+    .btn-primary {
+      border: 0; background: var(--green); color: #ffffff; border-radius: 16px;
+      padding: 0 22px; font-weight: 800; font-family: inherit; cursor: pointer; transition: 0.15s ease;
+    }
+    .btn-primary:hover { filter: brightness(1.08); }
+
+    .section-title { display: flex; align-items: center; justify-content: space-between; margin: 30px 0 14px; gap: 12px; }
+    .section-title h3 { margin: 0; font-size: 18px; letter-spacing: -0.02em; }
+    .section-title span { color: var(--muted-2); font-size: 13px; }
+
+    .add-toggle {
+      border: 1px solid var(--border-strong); background: var(--green-soft);
+      color: var(--green); border-radius: 12px; padding: 9px 14px;
+      font: inherit; font-weight: 700; font-size: 13px; cursor: pointer; transition: 0.15s ease;
+    }
+    .add-toggle:hover { background: rgba(10, 157, 91, 0.16); }
+
+    .kanji-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+
+    .kanji-card {
+      border: 1px solid var(--border);
+      background: #ffffff;
+      border-radius: var(--radius-lg); padding: 22px; transition: 0.2s ease; position: relative;
+      box-shadow: 0 6px 18px rgba(15, 40, 28, 0.05);
+    }
+    .kanji-card:hover { transform: translateY(-2px); background: var(--card-hover); border-color: var(--border-strong); }
+
+    .kanji-head { display: flex; gap: 16px; align-items: center; margin-bottom: 18px; }
+    .kanji-char {
+      width: 72px; height: 72px; border-radius: 22px; display: grid; place-items: center;
+      font-size: 42px; font-weight: 700; color: var(--green);
+      background: var(--green-soft); border: 1px solid var(--border-strong); flex-shrink: 0;
+    }
+    .kanji-card h4 { margin: 0; font-size: 18px; }
+    .kanji-card .meaning { color: var(--muted); font-size: 13px; margin-top: 4px; }
+
+    .reading-row {
+      display: grid; grid-template-columns: 52px 1fr; gap: 8px; padding: 9px 0;
+      border-top: 1px solid var(--border); font-size: 14px;
+    }
+    .reading-row b { color: var(--muted-2); font-weight: 500; }
+
+    .pill-wrap { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .pill {
+      border: 1px solid var(--border); color: var(--muted); background: rgba(15, 30, 22, 0.03);
+      border-radius: 999px; padding: 6px 9px; font-size: 12px;
+    }
+
+    .delete-btn {
+      position: absolute; top: 14px; right: 14px;
+      border: 1px solid var(--border); background: rgba(15, 30, 22, 0.03); color: var(--muted-2);
+      width: 28px; height: 28px; border-radius: 9px; cursor: pointer; font-size: 14px;
+      display: grid; place-items: center; transition: 0.15s ease; opacity: 0;
+    }
+    .kanji-card:hover .delete-btn { opacity: 1; }
+    .delete-btn:hover { color: var(--danger); border-color: rgba(229,72,77,0.4); background: rgba(229,72,77,0.08); }
+
+    .sentences { display: grid; gap: 14px; }
+    .sentence-card {
+      border: 1px solid var(--border); background: #ffffff;
+      border-radius: var(--radius-lg); padding: 20px;
+      box-shadow: 0 6px 18px rgba(15, 40, 28, 0.05);
+    }
+    .sentence-card .jp { font-size: 20px; line-height: 1.7; margin: 0 0 8px; color: var(--text); }
+    .sentence-card .hira { margin: 0 0 8px; color: var(--green); font-size: 14px; }
+    .sentence-card .ko { margin: 0; color: var(--muted); font-size: 14px; }
+
+    .note { color: var(--muted-2); font-size: 12px; margin-top: 14px; line-height: 1.7; }
+    .empty {
+      border: 1px dashed var(--border); border-radius: var(--radius-lg);
+      padding: 30px; text-align: center; color: var(--muted-2); font-size: 14px;
+    }
+
+    /* Add-word form */
+    .form-card {
+      border: 1px solid var(--border-strong); border-radius: var(--radius-lg);
+      background: #ffffff; box-shadow: var(--shadow); padding: 24px; margin-bottom: 24px;
+      display: none;
+    }
+    .form-card.open { display: block; animation: fade 0.2s ease; }
+    @keyframes fade { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field.full { grid-column: 1 / -1; }
+    .field label { font-size: 12px; color: var(--muted); letter-spacing: 0.02em; }
+    .field input, .field textarea {
+      border: 1px solid var(--border); background: var(--field); color: var(--text);
+      border-radius: 12px; padding: 12px 14px; font: inherit; font-size: 15px; outline: none; resize: vertical;
+    }
+    .field input:focus, .field textarea:focus { border-color: var(--border-strong); box-shadow: 0 0 0 4px rgba(10, 157, 91, 0.10); background: #fff; }
+    .field .hint { font-size: 11px; color: var(--muted-2); }
+    .form-actions { display: flex; gap: 10px; margin-top: 18px; }
+    .btn-ghost {
+      border: 1px solid var(--border); background: transparent; color: var(--muted);
+      border-radius: 12px; padding: 12px 18px; font: inherit; cursor: pointer; transition: 0.15s ease;
+    }
+    .btn-ghost:hover { color: var(--text); border-color: var(--border-strong); }
+
+    @media (max-width: 820px) {
+      .app { grid-template-columns: 1fr; }
+      aside { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--border); }
+      main { padding: 22px; }
+      .input-card { grid-template-columns: 1fr; }
+      .input-card .btn-primary { padding: 15px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside>
+      <div class="brand">
+        <div class="logo">一</div>
+        <div>
+          <h1>JA Study</h1>
+          <p>Day by day Japanese notes</p>
+        </div>
+      </div>
+
+      <div class="side-label">Study Days</div>
+      <div class="day-list">
+        <button class="day-button active"><span>Day 1</span><span class="badge" id="dayCount">0 kanji</span></button>
+        <button class="day-button"><span>Day 2</span><span class="badge">ready</span></button>
+        <button class="day-button"><span>Day 3</span><span class="badge">ready</span></button>
+      </div>
+      <button class="new-day">+ New Day</button>
+
+      <div class="side-label">한자</div>
+      <div class="pill-wrap" id="sideFocus"></div>
+    </aside>
+
+    <main>
+      <section class="hero">
+        <p class="eyebrow">Day 1 · 一から始めよう</p>
+        <h2>오늘의 한자 노트</h2>
+        <p>한자를 직접 추가하면 음독·훈독·단어·예문이 카드로 저장됩니다. 저장된 내용은 이 브라우저에 남아 다음에 열어도 그대로 보여요.</p>
+        <div class="stats">
+          <div class="stat"><strong id="statKanji">0</strong>Kanji</div>
+          <div class="stat"><strong id="statSentence">0</strong>Example sentences</div>
+          <div class="stat"><strong>LINE Seed JP</strong>Font</div>
+        </div>
+      </section>
+
+      <section class="input-card">
+        <input id="kanjiInput" maxlength="1" placeholder="저장된 한자를 검색하세요. 예: 一" />
+        <button class="btn-primary" onclick="showInputKanji()">Search</button>
+      </section>
+
+      <div id="result"></div>
+
+      <div class="section-title">
+        <h3>내 한자</h3>
+        <button class="add-toggle" onclick="toggleForm()">+ 단어 추가</button>
+      </div>
+
+      <!-- Add-word form -->
+      <section class="form-card" id="formCard">
+        <div class="form-grid">
+          <div class="field">
+            <label>한자 (1자)</label>
+            <input id="fKanji" maxlength="1" placeholder="一" />
+          </div>
+          <div class="field">
+            <label>뜻 / 제목</label>
+            <input id="fTitle" placeholder="하나 / 가장 / 첫 번째" />
+          </div>
+          <div class="field">
+            <label>훈음 (한국식)</label>
+            <input id="fMeaning" placeholder="한 일" />
+          </div>
+          <div class="field">
+            <label>음독</label>
+            <input id="fOn" placeholder="イチ, イツ" />
+          </div>
+          <div class="field">
+            <label>훈독</label>
+            <input id="fKun" placeholder="ひと, ひとつ" />
+          </div>
+          <div class="field full">
+            <label>단어 (한 줄에 하나)</label>
+            <textarea id="fWords" rows="3" placeholder="一番 · いちばん · 가장&#10;一日 · いちにち · 하루"></textarea>
+            <span class="hint">형식 자유. 예: 一番 · いちばん · 가장</span>
+          </div>
+          <div class="field full">
+            <label>예문 (한 줄에 하나, | 로 구분)</label>
+            <textarea id="fExamples" rows="3" placeholder="今日は一日家にいました。 | きょうは いちにち いえに いました。 | 오늘은 하루 종일 집에 있었어요."></textarea>
+            <span class="hint">형식: 일본어 | 히라가나 | 한국어</span>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn-primary" style="padding:12px 22px;" onclick="addKanji()">저장하기</button>
+          <button class="btn-ghost" onclick="toggleForm()">취소</button>
+        </div>
+      </section>
+
+      <section class="kanji-grid" id="kanjiGrid"></section>
+
+      <div class="section-title">
+        <h3>예문 모음</h3>
+        <span>일본어 · 히라가나 · 한국어</span>
+      </div>
+      <section class="sentences" id="sentenceList"></section>
+
+      <p class="note">※ 저장 데이터는 현재 이 브라우저(localStorage)에 보관됩니다. 다른 기기/브라우저와 공유하려면 Supabase 같은 백엔드 연결이 필요해요.</p>
+    </main>
+  </div>
+
+  <script>
+    const STORE_KEY = "kanjiSeed_day1";
+
+    // 처음 한 번만 들어가는 기본 예시(저장소가 비어있을 때)
+    const SEED = [
+      {
+        kanji: "一", title: "하나 / 가장 / 첫 번째", meaning: "한 일",
+        onyomi: "イチ, イツ", kunyomi: "ひと, ひとつ",
+        words: ["一番 · いちばん · 가장, 제일", "一日 · いちにち · 하루", "一度 · いちど · 한 번"],
+        examples: [
+          ["今日は一日家にいました。", "きょうは いちにち いえに いました。", "오늘은 하루 종일 집에 있었어요."],
+          ["一度日本に行きたいです。", "いちど にほんに いきたいです。", "한번 일본에 가고 싶어요."]
+        ]
+      },
+      {
+        kanji: "日", title: "날 / 해", meaning: "날 일",
+        onyomi: "ニチ, ジツ", kunyomi: "ひ, か",
+        words: ["日本 · にほん · 일본", "今日 · きょう · 오늘", "一日 · いちにち · 하루"],
+        examples: [["今日はいい天気です。", "きょうは いい てんきです。", "오늘은 날씨가 좋아요."]]
+      }
+    ];
+
+    let kanjiList = [];
+
+    function load() {
+      try {
+        const raw = localStorage.getItem(STORE_KEY);
+        if (raw) { kanjiList = JSON.parse(raw); }
+        else { kanjiList = SEED.slice(); save(); }
+      } catch (e) { kanjiList = SEED.slice(); }
+    }
+
+    function save() {
+      try { localStorage.setItem(STORE_KEY, JSON.stringify(kanjiList)); }
+      catch (e) { alert("저장 공간에 접근할 수 없어요. 브라우저 설정을 확인해주세요."); }
+    }
+
+    function esc(s) {
+      return String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+    }
+
+    function cardHTML(item, idx) {
+      const words = (item.words || []).map(w => `<span class="pill">${esc(w)}</span>`).join("");
+      return `
+        <article class="kanji-card">
+          <button class="delete-btn" title="삭제" onclick="removeKanji(${idx})">✕</button>
+          <div class="kanji-head">
+            <div class="kanji-char">${esc(item.kanji)}</div>
+            <div>
+              <h4>${esc(item.kanji)} · ${esc(item.title || "")}</h4>
+              <div class="meaning">${esc(item.meaning || "")}</div>
+            </div>
+          </div>
+          <div class="reading-row"><b>음독</b><span>${esc(item.onyomi || "—")}</span></div>
+          <div class="reading-row"><b>훈독</b><span>${esc(item.kunyomi || "—")}</span></div>
+          ${words ? `<div class="pill-wrap">${words}</div>` : ""}
+        </article>`;
+    }
+
+    function render() {
+      const grid = document.getElementById("kanjiGrid");
+      const sentences = document.getElementById("sentenceList");
+      const focus = document.getElementById("sideFocus");
+
+      if (kanjiList.length === 0) {
+        grid.innerHTML = `<div class="empty">아직 저장된 한자가 없어요. <strong>+ 단어 추가</strong>로 첫 한자를 등록해보세요.</div>`;
+        sentences.innerHTML = "";
+      } else {
+        grid.innerHTML = kanjiList.map((it, i) => cardHTML(it, i)).join("");
+        const allEx = kanjiList.flatMap(it => it.examples || []);
+        sentences.innerHTML = allEx.length
+          ? allEx.map(s => `
+              <article class="sentence-card">
+                <p class="jp">${esc(s[0] || "")}</p>
+                <p class="hira">${esc(s[1] || "")}</p>
+                <p class="ko">${esc(s[2] || "")}</p>
+              </article>`).join("")
+          : `<div class="empty">등록된 예문이 없어요.</div>`;
+      }
+
+      focus.innerHTML = kanjiList.map(it => `<span class="pill">${esc(it.kanji)}</span>`).join("");
+      document.getElementById("dayCount").textContent = kanjiList.length + " kanji";
+      document.getElementById("statKanji").textContent = kanjiList.length;
+      document.getElementById("statSentence").textContent = kanjiList.reduce((n, it) => n + (it.examples ? it.examples.length : 0), 0);
+    }
+
+    function toggleForm() {
+      document.getElementById("formCard").classList.toggle("open");
+    }
+
+    function addKanji() {
+      const kanji = document.getElementById("fKanji").value.trim();
+      if (!kanji) { alert("한자를 한 글자 입력해주세요."); return; }
+
+      const words = document.getElementById("fWords").value
+        .split("\n").map(s => s.trim()).filter(Boolean);
+
+      const examples = document.getElementById("fExamples").value
+        .split("\n").map(s => s.trim()).filter(Boolean)
+        .map(line => line.split("|").map(p => p.trim()));
+
+      const item = {
+        kanji,
+        title: document.getElementById("fTitle").value.trim(),
+        meaning: document.getElementById("fMeaning").value.trim(),
+        onyomi: document.getElementById("fOn").value.trim(),
+        kunyomi: document.getElementById("fKun").value.trim(),
+        words, examples
+      };
+
+      const existing = kanjiList.findIndex(it => it.kanji === kanji);
+      if (existing >= 0) {
+        if (!confirm(`"${kanji}" 은(는) 이미 있어요. 새 내용으로 덮어쓸까요?`)) return;
+        kanjiList[existing] = item;
+      } else {
+        kanjiList.push(item);
+      }
+
+      save();
+      render();
+      ["fKanji","fTitle","fMeaning","fOn","fKun","fWords","fExamples"].forEach(id => document.getElementById(id).value = "");
+      document.getElementById("formCard").classList.remove("open");
+    }
+
+    function removeKanji(idx) {
+      if (!confirm(`"${kanjiList[idx].kanji}" 을(를) 삭제할까요?`)) return;
+      kanjiList.splice(idx, 1);
+      save();
+      render();
+    }
+
+    function showInputKanji() {
+      const input = document.getElementById("kanjiInput").value.trim();
+      const result = document.getElementById("result");
+      if (!input) { result.innerHTML = `<p class="note" style="color: var(--danger);">한자를 한 개 입력해주세요.</p>`; return; }
+
+      const idx = kanjiList.findIndex(it => it.kanji === input);
+      if (idx < 0) {
+        result.innerHTML = `<p class="note">"${esc(input)}" 은(는) 아직 저장돼 있지 않아요. <strong>+ 단어 추가</strong>로 등록해보세요.</p>`;
+        return;
+      }
+      const data = kanjiList[idx];
+      const ex = (data.examples || []).map(s => `
+        <article class="sentence-card">
+          <p class="jp">${esc(s[0] || "")}</p>
+          <p class="hira">${esc(s[1] || "")}</p>
+          <p class="ko">${esc(s[2] || "")}</p>
+        </article>`).join("");
+      result.innerHTML = `
+        <div class="section-title"><h3>Search Result</h3><span>${esc(data.kanji)}</span></div>
+        ${cardHTML(data, idx)}
+        ${ex ? `<div class="section-title"><h3>Example</h3><span>3-line format</span></div><section class="sentences">${ex}</section>` : ""}`;
+    }
+
+    document.getElementById("kanjiInput").addEventListener("keydown", e => { if (e.key === "Enter") showInputKanji(); });
+
+    load();
+    render();
+  </script>
+</body>
+</html>
