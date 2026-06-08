@@ -259,8 +259,8 @@
 <div class="app">
   <aside>
     <div class="lang-switch" id="langSwitch">
-      <button class="lang-btn" data-lang="en">EN</button>
       <button class="lang-btn" data-lang="ko">한국어</button>
+      <button class="lang-btn" data-lang="en">EN</button>
     </div>
 
     <div class="brand">
@@ -305,7 +305,7 @@
 </div>
 
 <script>
-  const STORE_KEY = "jastudy_v9";
+  const STORE_KEY = "jastudy_v10";
 
   const I18N = {
     en: {
@@ -343,7 +343,7 @@
   };
 
   const SEED = {
-    currentDay:1, totalDays:3, lang:"en",
+    currentDay:1, totalDays:3, lang:"ko",
     days:[
       {
         day:1, kanji:"\u4e00",
@@ -367,13 +367,36 @@
           { w:"\u4e00\u8a00", r:"\u3072\u3068\u3053\u3068", m:{en:"a word, a remark", ko:"\ud55c\ub9c8\ub514"},
             ex:{jp:"\u4e00\u8a00\u3060\u3051\u304a\u9858\u3044\u3057\u307e\u3059\u3002", hira:"\u3072\u3068\u3053\u3068\u3060\u3051 \u304a\u306d\u304c\u3044\u3057\u307e\u3059\u3002", en:"Just a word, please.", ko:"\ud55c\ub9c8\ub514\ub9cc \ubd80\ud0c1\ub4dc\ub9bd\ub2c8\ub2e4."} }
         ]
+      },
+      {
+        day:2, kanji:"二",
+        title:{en:"two", ko:"둘 / 두 번째"},
+        meaning:{en:"the number two", ko:"두 이"},
+        onReading:"に", kunReading:"ふた",
+        audio:"https://marketing.gilbut.co.kr/qr/eztok/book/301242/002.mp3",
+        onWords:[
+          { w:"二次会", r:"にじかい", m:{en:"after-party, second round", ko:"2차 (뒤풀이)"},
+            ex:{jp:"二次会に行きます。", hira:"にじかいに いきます。", en:"I'm going to the after-party.", ko:"2차에 갑니다."} },
+          { w:"一石二鳥", r:"いっせきにちょう", m:{en:"killing two birds with one stone", ko:"일석이조"},
+            ex:{jp:"これは一石二鳥です。", hira:"これは いっせきにちょう です。", en:"This is like killing two birds with one stone.", ko:"이것은 일석이조입니다."} }
+        ],
+        kunWords:[
+          { w:"二つ", r:"ふたつ", m:{en:"two (things)", ko:"두 개"},
+            ex:{jp:"りんごを二つください。", hira:"りんごを ふたつ ください。", en:"Two apples, please.", ko:"사과 2개 주세요."} },
+          { w:"二重", r:"ふたえ", m:{en:"double, double eyelid", ko:"두 겹, 쌍꺼풀"},
+            ex:{jp:"彼女は二重です。", hira:"かのじょは ふたえ です。", en:"She has double eyelids.", ko:"그녀는 쌍꺼풀이 있습니다."} },
+          { w:"二股", r:"ふたまた", m:{en:"two-timing, a fork", ko:"양다리"},
+            ex:{jp:"二股はだめです。", hira:"ふたまた は だめです。", en:"Two-timing is not okay.", ko:"양다리는 안됩니다."} },
+          { w:"二日", r:"ふつか", m:{en:"the 2nd (of the month)", ko:"2일 (예외 읽기)"},
+            ex:{jp:"二日に会いましょう。", hira:"ふつかに あいましょう。", en:"Let's meet on the 2nd.", ko:"2일에 만나요."} }
+        ]
       }
     ]
   };
 
   let state = {};
   let currentDay = 1;
-  let lang = "en";
+  let lang = "ko";
 
   function tr(){ return I18N[lang]; }
   function L(v){ return (v && typeof v==="object" && !Array.isArray(v)) ? (v[lang] ?? v.en ?? "") : (v||""); }
